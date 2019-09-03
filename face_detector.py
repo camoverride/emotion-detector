@@ -40,9 +40,19 @@ while True:
         max_emotion = np.argmax(preds)
         prediction = emotions[max_emotion]
 
-        # Print the prediction to the terminal.
-        print(prediction)
-
+        # Draw a boundingbox around the face with the prediction.
+        cv2.putText(img=frame,
+                    text=prediction, 
+                    org=(fX, fY - 10),
+                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    fontScale=1,
+                    color=(255, 255, 255),
+                    thickness=2)
+        cv2.rectangle(img=frame,
+                      pt1=(fX, fY),
+                      pt2=(fX + fW, fY + fH),
+                      color=(255, 255, 255),
+                      thickness=2)
 
     # Convert the webcam's frame to black-and white.
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
