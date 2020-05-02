@@ -1,4 +1,4 @@
+data.json
 __pycache__
-test.py
-venv
-.vscode
+nohup.out
+models

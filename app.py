@@ -1,26 +1,48 @@
-from flask import Flask, render_template, Response
-from camera import VideoCamera
-from flask_bootstrap import Bootstrap
+from threading import Lock
+
+from flask import Flask, request, render_template
+from flask_socketio import SocketIO, emit
+
+# from face_utils import decode_image, crop_face, get_emotions
 
 
+import random # for debugging only
+
+async_mode = None
+thread = None
 app = Flask(__name__)
+socketio = SocketIO(app, async_mode=None)
+thread_lock = Lock()
 
-bootstrap = Bootstrap(app)
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html", async_mode=socketio.async_mode)
 
-def gen(camera):
-    while True:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen(VideoCamera()),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+@socketio.on('my_event', namespace='/emotion_detector')
+def test_message(message):
+    """
+    The client-side javascript generates an event every 2 seconds, sending a video frame to
+    this route. The frame is processed and an emotion is returned to the client.
+    """
+    try:
+        # Decode the image.
+        image = decode_image(message["data"])
 
-if __name__ == '__main__':
-    app.run()
+        # Crop the image to a single face.
+        cropped_face = crop_face(image)
+
+        # Get the category of the face.
+        emotion = get_emotions(cropped_face)
+
+    except:
+        emotion = random.choice(["lizzo", "lasagna", "yolo", "money", "super money", "matzah"])
+
+    # Send the category to the client.
+    socketio.emit("emotion_response", {"data": emotion}, namespace="/emotion_detector")
+
+
+if __name__ == "__main__":
+    # TODO: run with Gunicorn instead.
+    socketio.run(app, debug=True, host="0.0.0.0")

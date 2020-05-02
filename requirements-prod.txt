@@ -1,0 +1,8 @@
+opencv-python
+flask
+imutils
+gunicorn
+Pillow
+flask-socketio
+flask-sockets
+tornado
