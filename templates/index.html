@@ -13,10 +13,8 @@
 
 
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
-
 
     <script type="text/javascript">
         // Stream video back to client.
@@ -72,66 +70,10 @@
         window.setInterval(function() {
             capture();
         }, 5000);
+
+        // Make sure the video canvas stays hidden.
+        document.getElementById("video_canvas").style.visibility = "hidden";
+
     </script>
-
-
-
-
-
-
-
-
-
-
-    <!-- <script type="text/javascript">
-        // This script sends frames from the video playback to the server.
-        video = document.getElementById("video")
-
-        let isPlaying = false, gotMetadata = false;
-
-        video.onloadedmetadata = () => {
-            gotMetadata = true;
-            if (isPlaying)
-                startObjectDetection();
-        };
-            video.onplaying = () => {
-            isPlaying = true;
-            if (gotMetadata) {
-                startObjectDetection();
-            }
-        };
-
-
-        let imageCanvas = document.createElement('canvas');
-
-        function postFile(file) {
-
-            let formdata = new FormData();
-            formdata.append("image", file);
-
-            let xhr = new XMLHttpRequest();
-            xhr.open('POST', window.location.origin + '/image', true);
-            xhr.onload = function () {
-                if (this.status === 200) {
-                    let objects = JSON.parse(this.response);
-                    imageCanvas.toBlob(postFile, 'image/jpeg');
-                }
-                else {
-                    console.error(xhr);
-                }
-            };
-        xhr.send(formdata);
-        }
-
-        function sendImageFromCanvas() {
-            imageCanvas.toBlob(postFile, 'image/jpeg');
-        }
-
-        setInterval(sendImageFromCanvas, 5000);
-    </script> -->
-
-
-
-
 </body>
 </html>

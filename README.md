@@ -4,8 +4,8 @@ A mini-XCEPTION model was created based off of [this paper](https://arxiv.org/pd
 
 ## Run it
 The web app is Dockerized:
-- `docker run -p 5000:5000 face-app`
-- GCP style: `docker run --rm -p 5000:5000 gcr.io/${PROJECT_ID}/face-app:v${PROJECT_VERSION}`
+- `docker run -e PYTHONUNBUFFERED=0 -p 5000:5000 face-app`
+- GCP style: `docker run --rm -e PYTHONUNBUFFERED=0 -p 5000:5000 gcr.io/${PROJECT_ID}/face-app:v${PROJECT_VERSION}`
 - `docker built -t face-app:VERSION .`
 
 Run it locally with gunicorn or Flask:
