@@ -20,6 +20,12 @@ These files are for Heroku deployment:
 - `Procfile`
 - `runtime.txt`
 
+## Tests
+
+Test model functions that are called by the Flask server:
+
+`python -m unittest tests/face_utils_tests.py`
+
 
 ## TO-DO List
 CURRENT STATE: with firewall exception, this successfully does a videoplayback and streams dummy predictions. Major next steps are setting up HTTPS so that the video playback always works and then setting up model servers.
@@ -42,3 +48,4 @@ CURRENT STATE: with firewall exception, this successfully does a videoplayback a
 - Set up tensorflow servers for face-detection and emotion-detection models. Find out how to make this secure so only my app can send requests to the server.
 - Currently, I have a server deployed with docker/kubernetes on GCP. It is HTTP, not HTTPS, so the webcam doesn't work (Chrome blocks `getMediaDevices` from HTTP connections). To get around this, I put an exception for my app in chrome's firewall: https://stackoverflow.com/questions/34197653/getusermedia-in-chrome-47-without-using-https
 - If predictions come in too quickly, things get "clogged up" as the stack of images waiting to be processed grows. Figure out how to dump the stack, instead prefering latency (in other words, wait for one response is returned before asking for another -- sync, not async!!!)
+- Read this: https://towardsdatascience.com/securing-ml-services-on-the-web-69408e8554d0
