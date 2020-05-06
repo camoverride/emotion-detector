@@ -1,14 +1,3 @@
-"""
-TODO: one route should crop. Then the cropped face should be passed to every other route,
-where there is one route per model. That way each model can update without needing to wait
-for the others. Also: update some models (i.e. gender) less frequently.
-
-Set models to update only after previous HTTP request is processed and returned.
-
-Make sure that websockets aren't sending the same reply to every client... each client
-should access independently...
-"""
-
 from threading import Lock
 
 from flask import Flask, request, render_template
