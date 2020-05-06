@@ -3,13 +3,25 @@ This module contains functions that process image data (i.e. `decode_image`) as 
 that make calls to external machine learning API's (i.e. `crop_face` and `get_emotions`). When additional
 functions are created that make calls to external API's, they should all be placed here.
 """
+"""
+TODO:
+Locally test model performance.
+Add confusion matrix to tests.
+Check softmax on output layer.
+Add smoothing for video streaming.
+Also, Xception >>> mini-Xception.
+face_detection_model (pre-compuled haarcascade) really sucks
+    and can't handle faces at odd angles
+re-train model for low-light conditions, generate new data (tf built-in utils)
+"""
 
 import io
 import base64
 import cv2
 import numpy as np
 from PIL import Image
-from tensorflow.keras.models import load_model
+import json
+import requests
 
 
 def decode_image(image_string):
@@ -26,7 +38,7 @@ def decode_image(image_string):
     numpy array
         A numpy array representing all the data from the webcam frame.
     """
-    image_data = base64.b64decode(str(image_string.split(',')[1]))
+    image_data = base64.b64decode(str(image_string.split(",")[1]))
     frame = Image.open(io.BytesIO(image_data))
     frame = np.array(frame)
 
@@ -46,7 +58,8 @@ def crop_face(frame):
     Returns
     -------
     numpy array
-        A numpy array that has been cropped to the face.
+        A numpy array that has been cropped to the face and resized to 48x48 pixels, giving it the shape
+        1x48x48x1.
     """
     # TODO: actually implement this as a web API.
     face_detection_model = cv2.CascadeClassifier("models/haarcascade_frontalface_default.xml")
@@ -59,46 +72,48 @@ def crop_face(frame):
     (fX, fY, fW, fH) = face_coords
     cropped_face = frame[fY:fY + fH, fX:fX + fW]
 
-    return cropped_face
-
-
-
-def get_emotions(cropped_face):
-    """
-    Accepts a frame from a videostream and sends it to the tensorflow server. Returns a
-    softmax over predicted categories. This requires additional smoothing and munging,
-    but this process is lightweight and can be done on the Flask server.
-
-    Parameters
-    ----------
-    cropped_face: a numpy array.
-        A numpy array representing an image cropped to a specific face.
-
-    Returns
-    -------
-    str
-        The most likely emotion, taken from the softmax returned by the model.
-    """
-    face_debug = cropped_face # Used for local debugging only.
-
-    # TODO: actually implement this as a web API.
-    emotion_model = load_model("models/XCEPTION.72.model", compile=False)
-
     # Resize, black-and-white, reshape, and normalize  face.
     cropped_face = cv2.resize(cropped_face, (48, 48))
     cropped_face = cv2.cvtColor(cropped_face, cv2.COLOR_BGR2GRAY)
     cropped_face = cropped_face.reshape(48, 48, 1)
     cropped_face = cropped_face / 255
 
-    # Get the predictions (a vector of length 7) and map it to the appropriate emotion.
-    preds = emotion_model.predict(np.array([cropped_face, cropped_face]))[0]
-    emotions = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
-    max_emotion = np.argmax(preds)
-    prediction = emotions[max_emotion]
+    return cropped_face
 
-    # Local debug. TODO: remove this and make it a test.
-    gray_face = cv2.cvtColor(face_debug, cv2.COLOR_BGR2GRAY)
-    cv2.imshow("frame", gray_face)
-    print(prediction)
+
+def get_emotions(cropped_face):
+    """
+    Accepts a frame from a videostream and sends it to the tensorflow server which returns a
+    softmax over predicted categories. This argmax from this softmax is then returned as the
+    predicted emotion.
+
+    TODO: the model possibly over-predicts neutral and happy and under-predicts dsigust and
+    scared, so some post-processing should be done on the softmax in order to return a better
+    prediction.
+
+    Parameters
+    ----------
+    cropped_face: a numpy array.
+        A numpy array representing an image cropped to a specific face. The shape is 1x48x48x1,
+        representing 1 face of 48x48 pixels and 1 color channel.
+
+    Returns
+    -------
+    str
+        The most likely emotion, taken from the softmax returned by the model.
+    """
+    # The domain of the server.
+    url = "localhost" #"34.83.242.28"
+
+    # Create the request object.
+    data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
+    headers = {"content-type": "application/json"}
+    json_response = requests.post(f"http://{url}:8080/v1/models/model:predict", data=data, headers=headers)
+
+    # Get the prediction.
+    predictions = np.array(json.loads(json_response.text)["predictions"])
+    emotions = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
+    max_emotion = np.argmax(predictions[0])
+    prediction = emotions[max_emotion]
 
     return prediction
