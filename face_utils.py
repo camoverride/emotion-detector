@@ -42,6 +42,7 @@ def crop_face(frame):
     Sends the image to the object detection model to locate faces. After the faces are located, only one
     is selected and its coordinates are returned.
 
+    TODO: actually implement this as a web API.
     Parameters
     ----------
     frame: Image
@@ -53,7 +54,6 @@ def crop_face(frame):
         A numpy array that has been cropped to the face and resized to 48x48 pixels, giving it the shape
         1x48x48x1.
     """
-    # TODO: actually implement this as a web API.
     face_detection_model = cv2.CascadeClassifier("models/haarcascade_frontalface_default.xml")
     
     # Get the coordinates for all the faces from the model.
@@ -98,8 +98,6 @@ def get_emotions(cropped_face):
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
     json_response = requests.post(f"http://{EMOTION_URL}:8080/v1/models/model:predict", data=data, headers=headers)
-
-    print(json_response.text)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])

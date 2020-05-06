@@ -1,3 +1,7 @@
+"""
+WARNING: The functions `get_emotions` and `crop_face` call web API's.
+"""
+
 from face_utils import decode_image, crop_face, get_emotions
 
 import unittest
