@@ -3,17 +3,6 @@ This module contains functions that process image data (i.e. `decode_image`) as 
 that make calls to external machine learning API's (i.e. `crop_face` and `get_emotions`). When additional
 functions are created that make calls to external API's, they should all be placed here.
 """
-"""
-TODO:
-Locally test model performance.
-Add confusion matrix to tests.
-Check softmax on output layer.
-Add smoothing for video streaming.
-Also, Xception >>> mini-Xception.
-face_detection_model (pre-compuled haarcascade) really sucks
-    and can't handle faces at odd angles
-re-train model for low-light conditions, generate new data (tf built-in utils)
-"""
 
 import io
 import base64
@@ -22,6 +11,9 @@ import numpy as np
 from PIL import Image
 import json
 import requests
+
+
+EMOTION_URL = "34.83.242.28"
 
 
 def decode_image(image_string):
@@ -75,7 +67,7 @@ def crop_face(frame):
     # Resize, black-and-white, reshape, and normalize  face.
     cropped_face = cv2.resize(cropped_face, (48, 48))
     cropped_face = cv2.cvtColor(cropped_face, cv2.COLOR_BGR2GRAY)
-    cropped_face = cropped_face.reshape(48, 48, 1)
+    cropped_face = cropped_face.reshape(1, 48, 48, 1)
     cropped_face = cropped_face / 255
 
     return cropped_face
@@ -102,13 +94,12 @@ def get_emotions(cropped_face):
     str
         The most likely emotion, taken from the softmax returned by the model.
     """
-    # The domain of the server.
-    url = "localhost" #"34.83.242.28"
-
     # Create the request object.
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
-    json_response = requests.post(f"http://{url}:8080/v1/models/model:predict", data=data, headers=headers)
+    json_response = requests.post(f"http://{EMOTION_URL}:8080/v1/models/model:predict", data=data, headers=headers)
+
+    print(json_response.text)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])

@@ -3,12 +3,12 @@ from face_utils import decode_image, crop_face, get_emotions
 import unittest
 import numpy as np
 
+
 class TestSum(unittest.TestCase):
     def test_get_emotions(self):
         # Dummy data that mimics the shape of the input.
         cropped_face = np.ones([1, 48, 48, 1]) # TODO: actually load local data.
-        emotion_prediction = get_emotions(cropped_face)
-        self.assertEqual(emotion_prediction, "neutral")
+        self.assertEqual(get_emotions(cropped_face), "neutral")
 
 
     # def test_crop_face():
