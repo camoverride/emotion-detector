@@ -49,6 +49,7 @@ CURRENT STATE: with firewall exception, this successfully does a videoplayback a
 
 ### App Development
 
+- [ ] Don't resize entire webcam image. Instead, sample a square from the middle of the image. This will prevent distortion from resizing!
 - [ ] Currently, I have a server deployed with docker/kubernetes on GCP. It is HTTP, not HTTPS, so the webcam doesn't work (Chrome blocks `getMediaDevices` from HTTP connections). To get around this, I put an exception for my app in chrome's firewall: https://stackoverflow.com/questions/34197653/getusermedia-in-chrome-47-without-using-https
 - [ ] create actual tests
 - [ ] Replace flask_sockets with the real deal: https://cloud.google.com/appengine/docs/flexible/python/using-websockets-and-session-affinity
@@ -60,3 +61,4 @@ CURRENT STATE: with firewall exception, this successfully does a videoplayback a
 - [ ] Read this: https://towardsdatascience.com/securing-ml-services-on-the-web-69408e8554d0
 - [ ] one route should crop. Then the cropped face should be passed to every other route, where there is one route per model. That way each model can update without needing to wait for the others. Also: update some models (i.e. gender) less frequently.
 - [ ] Make sure that websockets aren't sending the same reply to every client... each client should access independently...
+- [ ] Make websockets timeout after 5 minutes.
