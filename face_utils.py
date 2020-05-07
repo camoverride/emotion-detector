@@ -64,8 +64,7 @@ def crop_face(frame):
     (fX, fY, fW, fH) = face_coords
     cropped_face = frame[fY:fY + fH, fX:fX + fW]
 
-    # Convert to grayscale.
-    # https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
+    # Convert to grayscale. https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
     cropped_face = np.dot(cropped_face[...,:3], [0.2989, 0.5870, 0.1140])
 
     # Regularize.

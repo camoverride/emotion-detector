@@ -7,3 +7,4 @@ flask-socketio
 flask-sockets
 tornado
 requests
+scikit-image
