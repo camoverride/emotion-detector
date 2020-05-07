@@ -2,7 +2,7 @@
 $(document).ready(function() {
     var socket = io("/emotion_detector");
 
-    // Sends video data to the server every 2 seconds.
+    // Sends video data to the server every 5 seconds.
     window.setInterval(function() {
         var cap = document.getElementById("video_canvas");
         socket.emit("my_event", {data: cap.toDataURL("image/jpeg")});
@@ -27,9 +27,6 @@ function capture() {
     canvas.toBlob() = (blob) => {
     const img = new Image();
     img.src = window.URL.createObjectUrl(blob);
-
-
-    canvas.style.display="none"; // figure out how to hide this
     };
 }
 
