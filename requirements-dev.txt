@@ -1,5 +1,0 @@
-tensorflow
-keras
-python-opencv
-Pillow
-imutils
