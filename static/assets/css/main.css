@@ -2197,7 +2197,7 @@ input, select, textarea {
 		@media screen and (max-width: 736px) {
 
 			.features section {
-				padding: 2.5em 1.5em 0.1em 5.5em ;
+				padding: 1em 1.5em 0.1em 5.5em ;
 			}
 
 				.features section .icon {
@@ -2210,7 +2210,7 @@ input, select, textarea {
 		@media screen and (max-width: 480px) {
 
 			.features section {
-				padding: 2em 1.5em 0.1em 1.5em ;
+				padding: 1em 1.5em 0.1em 1.5em ;
 			}
 
 				.features section .icon {
@@ -3089,7 +3089,7 @@ input, select, textarea {
 		@media screen and (max-width: 1680px) {
 
 			.spotlights > section > .content {
-				padding: 4em 4em 2em 4em ;
+				padding: 1em 4em 2em 4em ;
 			}
 
 		}
@@ -3127,7 +3127,7 @@ input, select, textarea {
 			}
 
 			.spotlights > section > .content {
-				padding: 3em 2em 1em 2em ;
+				padding: 1em 2em 1em 2em ;
 			}
 
 		}
@@ -3215,7 +3215,7 @@ input, select, textarea {
 			@media screen and (max-width: 1680px) {
 
 				.wrapper > .inner {
-					padding: 4em 4em 2em 4em ;
+					padding: 1em 4em 2em 4em ;
 				}
 
 			}
@@ -3231,7 +3231,7 @@ input, select, textarea {
 			@media screen and (max-width: 736px) {
 
 				.wrapper > .inner {
-					padding: 3em 2em 1em 2em ;
+					padding: 1em 2em 1em 2em ;
 				}
 
 			}
