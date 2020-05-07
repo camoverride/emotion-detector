@@ -1,21 +1,138 @@
-<!DOCTYPE html>
 <html>
-<head>
-    <!-- These 2 imports are required for send_data_to_server.js -->
-    <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
-</head>
+	<head>
+		<title>Hyperspace by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="stylesheet" href="static/assets/css/main.css" />
+         <!-- These 2 imports are required for send_data_to_server.js -->
+        <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+		<noscript><link rel="stylesheet" href="static/assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
 
-<body>
-    <h1>FACE ANALYZER</h1>
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<li><a href="#intro">Face App</a></li>
+							<li><a href="#one">About</a></li>
+							<li><a href="#two">Learn More</a></li>
+						</ul>
+					</nav>
+				</div>
+			</section>
 
-    <video autoplay="true" id="videoElement"></video>
-    <p>EMOTION:</p>
-    <div id="emotion_prediction">N/A</div>
-    <canvas id="video_canvas" style="overflow:auto"></canvas>
+		<!-- Wrapper -->
+			<div id="wrapper">
 
-    <!-- Not sure why, but these scripts only work if placed in the <body>, but not in <head>... -->
-    <script type="text/javascript" src="static/stream_video.js"></script>
-    <script type="text/javascript" src="static/send_data_to_server.js"></script>
-</body>
+				<!-- Face App section -->
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">                            
+                            <video autoplay="true" id="videoElement"></video>
+                            <!-- <div id="emotion_prediction">N/A</div> -->
+                            <canvas id="video_canvas" style="display:none"></canvas>
+                        
+                            <!-- Not sure why, but these scripts only work if placed in the <body>, but not in <head>... -->
+                            <script type="text/javascript" src="static/stream_video.js"></script>
+                            <script type="text/javascript" src="static/send_data_to_server.js"></script>
+
+						</div>
+						<div class="features">
+							<section>
+								<span class="icon solid major fa-smile-wink"></span>
+								<h3>Emotion</h3>
+								<p id="emotion_prediction">N/A</p>
+								<span class="icon solid major fa-baby"></span>
+								<h3>Age</h3>
+								<p>N/A</p>
+							</section>
+							<section>
+								<span class="icon solid major fa-globe-americas"></span> <!-- fa-address-card --> 
+								<h3>Ethnicity</h3>
+								<p>N/A</p>
+								<span class="icon solid major fa-transgender-alt"></span>
+								<h3>Gender</h3>
+								<p>N/A</p>
+							</section>
+						</section>
+					</section>
+
+				<!-- About section -->
+					<section id="one" class="wrapper style2 spotlights">
+						<section>
+							<div class="content">
+								<div class="inner">
+									<h2>About</h2>
+									<p>Tech companies use facial recognition technology (FRT) to learn more about their customers. They use this information to entice, manipulate, and deceive us. Modern FRT is based off <a href="https://en.wikipedia.org/wiki/Deep_learning">Deep Learning</a>, which is a type of artificial neural network system that has revolutionized AI. A deep learning model is a system that predicts some category given an input. In this case, a model can predict a categroy like <i>gender</i> given a picture of your face. This app uses multiple models to predict age, ethnicity, gender, and emotion. Google, Amazon, and Facebook don't need your consent or your profile information to learn lots about you: all they need is a picture of your face.</p>
+								</div>
+							</div>
+						</section>
+
+				<!-- Learn More section -->
+					<section id="two" class="wrapper style3 fade-up">
+						<div class="inner">
+							<h2>What we do</h2>
+							<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
+							<div class="features">
+								<section>
+									<span class="icon solid major fa-code"></span>
+									<h3>Lorem ipsum amet</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-lock"></span>
+									<h3>Aliquam sed nullam</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-cog"></span>
+									<h3>Sed erat ullam corper</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-desktop"></span>
+									<h3>Veroeros quis lorem</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-link"></span>
+									<h3>Urna quis bibendum</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+								<section>
+									<span class="icon major fa-gem"></span>
+									<h3>Aliquam urna dapibus</h3>
+									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+								</section>
+							</div>
+							<ul class="actions">
+								<li><a href="generic.html" class="button">Learn more</a></li>
+							</ul>
+						</div>
+					</section>
+
+				
+			</div>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>Made by <a href="https://camtsmith.com">Cameron Smith</a></li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="static/assets/js/jquery.min.js"></script>
+			<script src="static/assets/js/jquery.scrollex.min.js"></script>
+			<script src="static/assets/js/jquery.scrolly.min.js"></script>
+			<script src="static/assets/js/browser.min.js"></script>
+			<script src="static/assets/js/breakpoints.min.js"></script>
+			<script src="static/assets/js/util.js"></script>
+			<script src="static/assets/js/main.js"></script>
+
+	</body>
 </html>
