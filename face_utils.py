@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 import json
 import requests
-
+from skimage.transform import resize
 
 EMOTION_URL = "34.83.242.28"
 
@@ -64,11 +64,18 @@ def crop_face(frame):
     (fX, fY, fW, fH) = face_coords
     cropped_face = frame[fY:fY + fH, fX:fX + fW]
 
-    # Resize, black-and-white, reshape, and normalize  face.
-    cropped_face = cv2.resize(cropped_face, (48, 48))
-    cropped_face = cv2.cvtColor(cropped_face, cv2.COLOR_BGR2GRAY)
-    cropped_face = cropped_face.reshape(1, 48, 48, 1)
+    # Convert to grayscale.
+    # https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
+    cropped_face = np.dot(cropped_face[...,:3], [0.2989, 0.5870, 0.1140])
+
+    # Regularize.
     cropped_face = cropped_face / 255
+
+    # Resize to 48x48.
+    cropped_face = resize(cropped_face, (48, 48))
+
+    # Reshape to fit model.
+    cropped_face = cropped_face.reshape(1, 48, 48, 1)
 
     return cropped_face
 
