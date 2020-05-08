@@ -56,7 +56,7 @@ CURRENT STATE: with firewall exception, this successfully does a videoplayback a
 - [ ] Currently, requests are sent from `setInterval` on the client -- this is very insecure. Find a better way of doing this...
 - [ ] Dockerize this app so that it runs on gunicorn, not the Flask development server.
 - [ ] Create better build file, `deploy.sh`
-- [ ] Set up tensorflow servers for face-detection and emotion-detection models. Find out how to make this secure so only my app can send requests to the server.
+- [ ] Set up tensorflow servers for face-detection and emotion-detection models. Find out how to make this secure so only my app can send requests to the server: https://towardsdatascience.com/securing-ml-services-on-the-web-69408e8554d0 and https://cloud.google.com/docs/authentication/production?hl=en_US
 - [ ] If predictions come in too quickly, things get "clogged up" as the stack of images waiting to be processed grows. Figure out how to dump the stack, instead prefering latency (in other words, wait for one response is returned before asking for another -- sync, not async!!!) -- in other words, Set models to update only after previous HTTP request is processed and returned.
 - [ ] Read this: https://towardsdatascience.com/securing-ml-services-on-the-web-69408e8554d0
 - [ ] one route should crop. Then the cropped face should be passed to every other route, where there is one route per model. That way each model can update without needing to wait for the others. Also: update some models (i.e. gender) less frequently.
