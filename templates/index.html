@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Hyperspace by HTML5 UP</title>
+		<title>Face Your Data</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <link rel="stylesheet" href="static/assets/css/main.css" />
@@ -11,12 +11,12 @@
 	</head>
 	<body class="is-preload">
 
-		<!-- Sidebar -->
+			<!-- Sidebar -->
 			<section id="sidebar">
 				<div class="inner">
 					<nav>
 						<ul>
-							<li><a href="#intro">Face App</a></li>
+							<li><a href="#intro">Face Your Data</a></li>
 							<li><a href="#one">About</a></li>
 							<li><a href="#two">Learn More</a></li>
 						</ul>
@@ -24,89 +24,87 @@
 				</div>
 			</section>
 
-		<!-- Wrapper -->
+			<!-- Wrapper -->
 			<div id="wrapper">
 
 				<!-- Face App section -->
-					<section id="intro" class="wrapper style1 fullscreen fade-up">
-						<div class="inner">                            
-                            <video autoplay="true" id="videoElement"></video>
-                            <!-- <div id="emotion_prediction">N/A</div> -->
-                            <canvas id="video_canvas" style="display:none"></canvas>
-                        
-                            <!-- Not sure why, but these scripts only work if placed in the <body>, but not in <head>... -->
-                            <script type="text/javascript" src="static/stream_video.js"></script>
-                            <script type="text/javascript" src="static/send_data_to_server.js"></script>
+				<section id="intro" class="wrapper style1 fullscreen fade-up">
+					<div class="inner">                            
+						<video autoplay="true" id="videoElement"></video>
+						<!-- <div id="emotion_prediction">N/A</div> -->
+						<canvas id="video_canvas" style="display:none"></canvas>
+					
+						<!-- Not sure why, but these scripts only work if placed in the <body>, but not in <head>... -->
+						<script type="text/javascript" src="static/stream_video.js"></script>
+						<script type="text/javascript" src="static/send_data_to_server.js"></script>
 
-						</div>
-						<div class="features">
-							<section>
-								<span class="icon solid major fa-smile-wink"></span>
-								<h3>Emotion</h3>
-								<p id="emotion_prediction">N/A</p>
-								<span class="icon solid major fa-baby"></span>
-								<h3>Age</h3>
-								<p>N/A</p>
-							</section>
-							<section>
-								<span class="icon solid major fa-globe-americas"></span> <!-- fa-address-card --> 
-								<h3>Ethnicity</h3>
-								<p>N/A</p>
-								<span class="icon solid major fa-transgender-alt"></span>
-								<h3>Gender</h3>
-								<p>N/A</p>
-							</section>
+					</div>
+					<div class="features">
+						<section>
+							<span class="icon solid major fa-smile-wink"></span>
+							<h3>Emotion</h3>
+							<p id="emotion_prediction">N/A</p>
+							<span class="icon solid major fa-baby"></span>
+							<h3>Age</h3>
+							<p id="age_prediction">N/A</p>
+						</section>
+						<section>
+							<span class="icon solid major fa-globe-americas"></span> <!-- fa-address-card --> 
+							<h3>Ethnicity</h3>
+							<p id="ethnicity_prediction">N/A</p>
+							<span class="icon solid major fa-transgender-alt"></span>
+							<h3>Gender</h3>
+							<p id="gender_prediction">N/A</p>
 						</section>
 					</section>
+				</section>
 
 				<!-- About section -->
-					<section id="one" class="wrapper style2 spotlights">
-						<section>
-							<div class="content">
-								<div class="inner">
-									<h2>About</h2>
-									<p>Tech companies use facial recognition technology (FRT) to learn more about their customers. They use this information to entice, manipulate, and deceive us. Modern FRT is based off <a href="https://en.wikipedia.org/wiki/Deep_learning">deep learning</a>, which is a type of artificial neural network that has recently revolutionized AI. A deep learning model can predict some category given an input. In this case, a model can predict a categroy like <i>gender</i> given a video of your face. This app uses multiple models to predict age, ethnicity, gender, and emotion. Google, Amazon, and Facebook don't need your consent or your profile information to learn all about you: they just need a picture of your face.</p>
-								</div>
-								<ul class="actions">
-									<li><a href="" class="button">Read the Whitepapaer</a></li>
-								</ul>
+				<section id="one" class="wrapper style2 spotlights">
+					<section>
+						<div class="content">
+							<div class="inner">
+								<h2>About</h2>
+								<p>Tech companies use facial recognition technology (FRT) to learn more about their customers. They use this information to entice, manipulate, and deceive us. Modern FRT is based off <a href="https://en.wikipedia.org/wiki/Deep_learning">deep learning</a>, which is a type of artificial neural network that has recently revolutionized AI. A deep learning model can predict some category given an input. In this case, a model can predict a categroy like <i>gender</i> given a video of your face. This app uses multiple models to predict age, ethnicity, gender, and emotion. Google, Amazon, and Facebook don't need your consent or your profile information to learn all about you: they just need a picture of your face.</p>
 							</div>
-						</section>
-
-				<!-- Learn More section -->
-					<section id="two" class="wrapper style3 fade-up">
-						<div class="inner">
-							<h2>Learn More</h2>
-							<div class="features">
-								<section>
-									<h3>What does Google know about you?</h3>
-									<p><a href="https://en.wikipedia.org/wiki/California_Consumer_Privacy_Act">California Law</a> now requires that tech companies allow consumers to delete their personal data. This law also allows you to see what the companies know about you. <a href="https://www.businessinsider.com/what-does-google-know-about-me-search-history-delete-2019-10">Click here</a> to read about it.</p>
-								</section>
-								<section>
-									<h3>What is AI?</h3>
-									<p>Artificial Intelligence is any system that mimics human behavior. This can be as simple as knowing that 1 plus 1 equals 2 or as complex as driving a car. Like any technology, AI has the capacity to be used for good or for evil. If you want to be able to tell the difference between the two, you should <a href="https://courses.cs.washington.edu/courses/csep590/06au/projects/history-ai.pdf">learn more about AI</a>.</p>
-								</section>
-								<section>
-									<h3>How does this project work?</h3>
-									<p>Most of the code for this project is <a href="https://github.com/camoverride/emotion-detector">on GitHub</a>. All the data that this website collects is immediately thrown away: there's no database or server collecting your information: it's simply streamed back to your browser and is gone forever.</p>
-								</section>
-							</div>
+							<ul class="actions">
+								<li><a href="" class="button">Read the Whitepapaer</a></li>
+							</ul>
 						</div>
 					</section>
 
-				
+				<!-- Learn More section -->
+				<section id="two" class="wrapper style3 fade-up">
+					<div class="inner">
+						<h2>Learn More</h2>
+						<div class="features">
+							<section>
+								<h3>What does Google know about you?</h3>
+								<p><a href="https://en.wikipedia.org/wiki/California_Consumer_Privacy_Act">California Law</a> now requires that tech companies allow consumers to delete their personal data. This law also allows you to see what the companies know about you. <a href="https://www.businessinsider.com/what-does-google-know-about-me-search-history-delete-2019-10">Click here</a> to read about it.</p>
+							</section>
+							<section>
+								<h3>What is AI?</h3>
+								<p>Artificial Intelligence is any system that mimics human behavior. This can be as simple as knowing that 1 plus 1 equals 2 or as complex as driving a car. Like any technology, AI has the capacity to be used for good or for evil. If you want to be able to tell the difference between the two, you should <a href="https://courses.cs.washington.edu/courses/csep590/06au/projects/history-ai.pdf">learn more about AI</a>.</p>
+							</section>
+							<section>
+								<h3>How does this project work?</h3>
+								<p>The code for this project is <a href="https://github.com/camoverride/emotion-detector">on GitHub</a>. All the data that this website collects is immediately thrown away: there's no database or server collecting your information: it's simply streamed back to your browser and is gone forever. This was created by <a href="https://camtsmith.com">Cameron Smith</a>.</p>
+							</section>
+						</div>
+					</div>
+				</section>
 			</div>
 
-		<!-- Footer -->
-			<footer id="footer" class="wrapper style1-alt">
+			<!-- Footer -->
+			<!-- <footer id="footer" class="wrapper style1-alt">
 				<div class="inner">
 					<ul class="menu">
 						<li>Made by <a href="https://camtsmith.com">Cameron Smith</a></li>
 					</ul>
 				</div>
-			</footer>
+			</footer> -->
 
-		<!-- Scripts -->
+			<!-- Scripts -->
 			<script src="static/assets/js/jquery.min.js"></script>
 			<script src="static/assets/js/jquery.scrollex.min.js"></script>
 			<script src="static/assets/js/jquery.scrolly.min.js"></script>
