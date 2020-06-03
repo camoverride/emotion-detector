@@ -29,14 +29,23 @@
 
 				<!-- Face App section -->
 				<section id="intro" class="wrapper style1 fullscreen fade-up">
-					<div class="inner">                            
-						<video autoplay="true" id="videoElement"></video>
-						<!-- <div id="emotion_prediction">N/A</div> -->
-						<canvas id="video_canvas" style="display:none"></canvas>
+					<div class="inner">
+						<!-- Video stream from the webcam. Hide this because I can't figure out how to draw on it. -->                
+						<video autoplay="true" id="videoElement" style="display:none"></video>
+
+						<!-- Video canvas. This is what the client actually sees. -->
+						<canvas id="video_canvas"></canvas>
 					
 						<!-- Not sure why, but these scripts only work if placed in the <body>, but not in <head>... -->
 						<script type="text/javascript" src="static/stream_video.js"></script>
 						<script type="text/javascript" src="static/send_data_to_server.js"></script>
+						<script type="text/javascript" src="static/add_bb_to_video.js"></script>
+
+						<!-- Information about the parameters of the boundingbox are saved on the client side. -->
+						<p id="bb_x" style="display:none">10</p>
+						<p id="bb_y" style="display:none">20</p>
+						<p id="bb_width" style="display:none">160</p>
+						<p id="bb_height" style="display:none">450</p>
 
 					</div>
 					<div class="features">

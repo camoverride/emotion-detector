@@ -13,7 +13,8 @@ import json
 import requests
 from skimage.transform import resize
 
-EMOTION_URL = "34.83.242.28"
+
+EMOTION_MODEL_SERVER_URL = "34.83.242.28"
 
 
 def decode_image(image_string):
@@ -53,6 +54,9 @@ def crop_face(frame):
     numpy array
         A numpy array that has been cropped to the face and resized to 48x48 pixels, giving it the shape
         1x48x48x1.
+    
+    list
+        A list containing the 4 coordinates of the face: x, y, height, width.
     """
     face_detection_model = cv2.CascadeClassifier("models/haarcascade_frontalface_default.xml")
     
@@ -76,7 +80,7 @@ def crop_face(frame):
     # Reshape to fit model.
     cropped_face = cropped_face.reshape(1, 48, 48, 1)
 
-    return cropped_face
+    return cropped_face, face_coords
 
 
 def get_emotions(cropped_face):
@@ -103,7 +107,7 @@ def get_emotions(cropped_face):
     # Create the request object.
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
-    json_response = requests.post(f"http://{EMOTION_URL}:8080/v1/models/model:predict", data=data, headers=headers)
+    json_response = requests.post(f"http://{EMOTION_MODEL_SERVER_URL}:8080/v1/models/model:predict", data=data, headers=headers)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])
