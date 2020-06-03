@@ -6,11 +6,11 @@ functions are created that make calls to external API's, they should all be plac
 
 import io
 import base64
-import cv2
-import numpy as np
-from PIL import Image
 import json
 import requests
+import numpy as np
+import cv2
+from PIL import Image
 from skimage.transform import resize
 
 
