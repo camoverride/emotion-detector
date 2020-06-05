@@ -22,6 +22,8 @@ window.setInterval(function() {
     // Draw and customize the boundingbox.
     context.beginPath();
     context.rect(bb_x, bb_y, bb_h, bb_w);
+    context.strokeStyle = "purple";
+    context.lineWidth = "4";
     context.stroke();
 }, 10);
 

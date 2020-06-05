@@ -8,7 +8,7 @@ from face_utils import decode_image, crop_face, get_emotions
 
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode=None)
-thread_lock = Lock()
+thread_lock = Lock() # TODO: not sure if this is needed.
 
 
 @app.route("/")
