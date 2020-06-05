@@ -16,7 +16,7 @@ def index():
     return render_template("index.html", async_mode=socketio.async_mode)
 
 
-@socketio.on("compute_emotion_event", namespace="/compute_emotion_route")
+@socketio.on("analyze_emotion_request", namespace="/compute_emotion_route")
 def emotion_route(message):
     """
     Route for getting results from the emotion model.
