@@ -14,7 +14,8 @@ from PIL import Image
 from skimage.transform import resize
 
 
-EMOTION_MODEL_SERVER_URL = "34.83.242.28"
+# MODEL_SERVER_URL = "34.83.242.28"
+MODEL_SERVER_URL = "localhost"
 
 
 def decode_image(image_string):
@@ -36,49 +37,85 @@ def decode_image(image_string):
     frame = np.array(frame)
 
     return frame
-    
 
-def crop_face(frame):
+
+def get_faces(frame, output_dimensions):
     """
-    Sends the image to the object detection model to locate faces. After the faces are located, only one
-    is selected and its coordinates are returned.
+    This function uses the haarcascade model to identify faces in an image.
 
-    TODO: actually implement this as a web API.
+    TODO: implement this in tensorflow and add it to the model server.
+
     Parameters
     ----------
     frame: Image
-        A numpy array representing all the data from the webcam frame.
+        A numpy array representing all the data from a webcam page.
+
+    output_dimensions
+        A tuple that represents the desired (width, height) of the output image. Usually width = height.
 
     Returns
     -------
     numpy array
-        A numpy array that has been cropped to the face and resized to 48x48 pixels, giving it the shape
-        1x48x48x1.
-    
-    list
-        A list containing the 4 coordinates of the face: x, y, height, width.
+        A list of lists containing the coordinates of all the faces in the image.
     """
     face_detection_model = cv2.CascadeClassifier("models/haarcascade_frontalface_default.xml")
     
     # Get the coordinates for all the faces from the model.
-    faces = face_detection_model.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=5, minSize=(48, 48), flags=cv2.CASCADE_SCALE_IMAGE)
+    faces = face_detection_model.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=5, minSize=output_dimensions, flags=cv2.CASCADE_SCALE_IMAGE)
 
-    # Crop the image to the coordinates of the face.
+    return faces
+
+
+def crop_face(frame, output_dimensions, color=True):
+    """
+    Takes a list of faces and crops the image to a face.
+
+    Parameters
+    ----------
+    frame: Image
+        A numpy array representing all the data from the webcam frame.
+    
+    output_dimensions
+        A tuple that represents the desired (width, height) of the output image. Usually width = height.
+
+    color
+        True if color should be captured in the image. Results in an output shape of
+        (1, output_dimensions[0], output_dimensions[1], channels), where channels is 3 if color is True.
+
+    Returns
+    -------
+    numpy array
+        A numpy array that has been cropped to the face and resized to width x height. If
+    
+    list
+        A list containing the 4 coordinates of the face: x, y, height, width.
+    """
+    faces = get_faces(frame, output_dimensions)
+
+    # Crop the image to the coordinates of the first face.
     face_coords = sorted(faces, reverse=True, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]))[0]
     (fX, fY, fW, fH) = face_coords
     cropped_face = frame[fY:fY + fH, fX:fX + fW]
 
-    # Convert to grayscale. https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
-    cropped_face = np.dot(cropped_face[...,:3], [0.2989, 0.5870, 0.1140])
+    if not color:
+        # Convert to grayscale. https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
+        cropped_face = np.dot(cropped_face[...,:3], [0.2989, 0.5870, 0.1140])
 
-    # Regularize.
-    cropped_face = cropped_face / 255
+        # Regularize.
+        cropped_face = cropped_face / 255
 
-    # Resize to 48x48.
-    cropped_face = resize(cropped_face, (48, 48))
+        # Resize to the desired dimensions.
+        cropped_face = resize(cropped_face, output_dimensions)
 
-    # Reshape to fit model.
-    cropped_face = cropped_face.reshape(1, 48, 48, 1)
+        # Reshape to fit model.
+        cropped_face = cropped_face.reshape(1, output_dimensions[0], output_dimensions[1], 1)
+
+    else:
+        # Resize to the desired dimensions.
+        cropped_face = resize(cropped_face, output_dimensions)
+
+        # Reshape to fit model.
+        cropped_face = cropped_face.reshape(1, output_dimensions[0], output_dimensions[1], 3)
 
     return cropped_face, face_coords
 
@@ -107,11 +144,43 @@ def get_emotions(cropped_face):
     # Create the request object.
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
-    json_response = requests.post(f"http://{EMOTION_MODEL_SERVER_URL}:8080/v1/models/model:predict", data=data, headers=headers)
+    json_response = requests.post(f"http://{MODEL_SERVER_URL}:8080/v1/models/emotion_model:predict", data=data, headers=headers)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])
     emotions = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
+    max_emotion = np.argmax(predictions[0])
+    prediction = emotions[max_emotion]
+
+    return prediction
+
+
+def get_gender(cropped_face):
+    """
+    Accepts a frame from a videostream and sends it to the tensorflow server which returns a
+    softmax over predicted categories. This argmax from this softmax is then returned as the
+    predicted gender.
+
+
+    Parameters
+    ----------
+    cropped_face: a numpy array.
+        A numpy array representing an image cropped to a specific face. The shape is 1x48x48x1,
+        representing 1 face of 48x48 pixels and 1 color channel.
+
+    Returns
+    -------
+    str
+        The most likely gender, taken from the softmax returned by the model.
+    """
+    # Create the request object.
+    data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
+    headers = {"content-type": "application/json"}
+    json_response = requests.post(f"http://{MODEL_SERVER_URL}:8080/v1/models/gender_model:predict", data=data, headers=headers)
+
+    # Get the prediction.
+    predictions = np.array(json.loads(json_response.text)["predictions"])
+    emotions = ["female", "male"]
     max_emotion = np.argmax(predictions[0])
     prediction = emotions[max_emotion]
 

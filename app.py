@@ -3,7 +3,7 @@ from threading import Lock
 from flask import Flask, request, render_template
 from flask_socketio import SocketIO, emit
 
-from face_utils import decode_image, crop_face, get_emotions
+from face_utils import decode_image, crop_face, get_emotions, get_gender
 
 
 app = Flask(__name__)
@@ -25,13 +25,32 @@ def emotion_route(message):
     image = decode_image(message["data"])
 
     # Crop the image to a single face.
-    cropped_face, _ = crop_face(image)
+    cropped_face, _ = crop_face(image, (48, 48), color=False)
 
     # Get the category of the face.
     emotion = get_emotions(cropped_face)
 
     # Send the category to the client.
     socketio.emit("emotion_model_response", {"data": emotion}, namespace="/compute_emotion_route")
+
+
+@socketio.on("analyze_gender_request", namespace="/compute_gender_route")
+def gender_route(message):
+    """
+    Route for getting results from the gender model.
+    """
+    # Decode the image.
+    image = decode_image(message["data"])
+
+    # Crop the image to a single face.
+    cropped_face, _ = crop_face(image, (224, 224), color=True)
+
+    # Get the category of the face.
+    gender = get_gender(cropped_face)
+    print(gender)
+
+    # Send the category to the client.
+    socketio.emit("gender_model_response", {"data": gender}, namespace="/compute_gender_route")
 
 
 @socketio.on("compute_bb_event", namespace="/compute_bb")
@@ -46,12 +65,12 @@ def bb_route(message):
         image = decode_image(message["data"])
 
         # Crop the image to a single face.
-        _, coords = crop_face(image)
+        _, coords = crop_face(image, (48, 48))
 
         data = {"bb_x": str(coords[0]), "bb_y": str(coords[1]), "bb_width": str(coords[2]), "bb_height": str(coords[3])}
 
     except:
-        data = {"bb_x": str(0), "bb_y": str(0), "bb_width": str(0), "bb_height": str(0)}
+           data = {"bb_x": str(0), "bb_y": str(0), "bb_width": str(0), "bb_height": str(0)}
 
     # Send the category to the client.
     socketio.emit("bb_response", data, namespace="/compute_bb")
