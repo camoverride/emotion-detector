@@ -3,7 +3,7 @@ from threading import Lock
 from flask import Flask, request, render_template
 from flask_socketio import SocketIO, emit
 
-from face_utils import decode_image, crop_face, get_emotions, get_gender
+from face_utils import decode_image, crop_face, crop_face_large, get_emotions, get_gender
 
 
 app = Flask(__name__)
@@ -25,7 +25,7 @@ def emotion_route(message):
     image = decode_image(message["data"])
 
     # Crop the image to a single face.
-    cropped_face, _ = crop_face(image, (48, 48), color=False)
+    cropped_face, _ = crop_face(image)
 
     # Get the category of the face.
     emotion = get_emotions(cropped_face)
@@ -43,11 +43,10 @@ def gender_route(message):
     image = decode_image(message["data"])
 
     # Crop the image to a single face.
-    cropped_face, _ = crop_face(image, (224, 224), color=True)
+    cropped_face = crop_face_large(image)
 
     # Get the category of the face.
     gender = get_gender(cropped_face)
-    print(gender)
 
     # Send the category to the client.
     socketio.emit("gender_model_response", {"data": gender}, namespace="/compute_gender_route")
@@ -65,7 +64,7 @@ def bb_route(message):
         image = decode_image(message["data"])
 
         # Crop the image to a single face.
-        _, coords = crop_face(image, (48, 48))
+        _, coords = crop_face(image)
 
         data = {"bb_x": str(coords[0]), "bb_y": str(coords[1]), "bb_width": str(coords[2]), "bb_height": str(coords[3])}
 

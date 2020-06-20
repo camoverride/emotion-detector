@@ -39,7 +39,7 @@ def decode_image(image_string):
     return frame
 
 
-def get_faces(frame, output_dimensions):
+def get_faces(frame):
     """
     This function uses the haarcascade model to identify faces in an image.
 
@@ -61,12 +61,12 @@ def get_faces(frame, output_dimensions):
     face_detection_model = cv2.CascadeClassifier("models/haarcascade_frontalface_default.xml")
     
     # Get the coordinates for all the faces from the model.
-    faces = face_detection_model.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=5, minSize=output_dimensions, flags=cv2.CASCADE_SCALE_IMAGE)
+    faces = face_detection_model.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=5, minSize=(48, 48), flags=cv2.CASCADE_SCALE_IMAGE)
 
     return faces
 
 
-def crop_face(frame, output_dimensions, color=True):
+def crop_face(frame):
     """
     Takes a list of faces and crops the image to a face.
 
@@ -74,13 +74,6 @@ def crop_face(frame, output_dimensions, color=True):
     ----------
     frame: Image
         A numpy array representing all the data from the webcam frame.
-    
-    output_dimensions
-        A tuple that represents the desired (width, height) of the output image. Usually width = height.
-
-    color
-        True if color should be captured in the image. Results in an output shape of
-        (1, output_dimensions[0], output_dimensions[1], channels), where channels is 3 if color is True.
 
     Returns
     -------
@@ -90,34 +83,39 @@ def crop_face(frame, output_dimensions, color=True):
     list
         A list containing the 4 coordinates of the face: x, y, height, width.
     """
-    faces = get_faces(frame, output_dimensions)
+    faces = get_faces(frame)
 
     # Crop the image to the coordinates of the first face.
     face_coords = sorted(faces, reverse=True, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]))[0]
     (fX, fY, fW, fH) = face_coords
     cropped_face = frame[fY:fY + fH, fX:fX + fW]
 
-    if not color:
-        # Convert to grayscale. https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
-        cropped_face = np.dot(cropped_face[...,:3], [0.2989, 0.5870, 0.1140])
+    # Convert to grayscale. https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
+    cropped_face = np.dot(cropped_face[...,:3], [0.2989, 0.5870, 0.1140])
 
-        # Regularize.
-        cropped_face = cropped_face / 255
+    # Regularize.
+    cropped_face = cropped_face / 255
 
-        # Resize to the desired dimensions.
-        cropped_face = resize(cropped_face, output_dimensions)
+    # Resize to the desired dimensions.
+    cropped_face = resize(cropped_face, (48, 48))
 
-        # Reshape to fit model.
-        cropped_face = cropped_face.reshape(1, output_dimensions[0], output_dimensions[1], 1)
-
-    else:
-        # Resize to the desired dimensions.
-        cropped_face = resize(cropped_face, output_dimensions)
-
-        # Reshape to fit model.
-        cropped_face = cropped_face.reshape(1, output_dimensions[0], output_dimensions[1], 3)
+    # Reshape to fit model.
+    cropped_face = cropped_face.reshape(1, 48, 48, 1)
 
     return cropped_face, face_coords
+
+
+def crop_face_large(frame):
+    cropped_face = resize(frame, (224, 224))
+
+    # Reshape to fit model.
+    cropped_face = cropped_face.reshape(1, 224, 224, 3).astype('float32')
+
+    # this is needed because data seems to be rescaled to (0, 1) interval, whereas model expects values from 0-255
+    # TODO: check this!
+    cropped_face = cropped_face * 100
+
+    return cropped_face
 
 
 def get_emotions(cropped_face):
@@ -174,6 +172,7 @@ def get_gender(cropped_face):
         The most likely gender, taken from the softmax returned by the model.
     """
     # Create the request object.
+
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
     json_response = requests.post(f"http://{MODEL_SERVER_URL}:8080/v1/models/gender_model:predict", data=data, headers=headers)
