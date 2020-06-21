@@ -27,6 +27,8 @@ def emotion_route(message):
     # Crop the image to a single face.
     cropped_face, _ = crop_face(image)
 
+    print("GETTING EMOTION")
+
     # Get the category of the face.
     emotion = get_emotions(cropped_face)
 
@@ -45,11 +47,34 @@ def gender_route(message):
     # Crop the image to a single face.
     cropped_face = crop_face_large(image)
 
+    print("GETTING GENDER")
+
     # Get the category of the face.
     gender = get_gender(cropped_face)
 
     # Send the category to the client.
     socketio.emit("gender_model_response", {"data": gender}, namespace="/compute_gender_route")
+
+
+@socketio.on("analyze_age_request", namespace="/compute_age_route")
+def age_route(message):
+    """
+    Route for getting results from the age model.
+    """
+    # Decode the image.
+    image = decode_image(message["data"])
+
+    # Crop the image to a single face.
+    cropped_face = crop_face_large(image)
+
+    print("GETTING AGE")
+
+    # Get the category of the face.
+    age = get_age(cropped_face)
+
+
+    # Send the category to the client.
+    socketio.emit("age_model_response", {"data": age}, namespace="/compute_age_route")
 
 
 @socketio.on("compute_bb_event", namespace="/compute_bb")

@@ -159,7 +159,6 @@ def get_gender(cropped_face):
     softmax over predicted categories. This argmax from this softmax is then returned as the
     predicted gender.
 
-
     Parameters
     ----------
     cropped_face: a numpy array.
@@ -179,8 +178,38 @@ def get_gender(cropped_face):
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])
-    emotions = ["female", "male"]
-    max_emotion = np.argmax(predictions[0])
-    prediction = emotions[max_emotion]
+    genders = ["female", "male"]
+    max_gender= np.argmax(predictions[0])
+    prediction = genders[max_gender]
 
     return prediction
+
+
+def get_age(cropped_face):
+    """
+    Accepts a frame from a videostream and sends it to the tensorflow server which returns a
+    softmax over predicted age categories. This argmax from this softmax is then returned as the
+    predicted age.
+
+    Parameters
+    ----------
+    cropped_face: a numpy array.
+        A numpy array representing an image cropped to a specific face. The shape is 1x48x48x1,
+        representing 1 face of 48x48 pixels and 1 color channel.
+
+    Returns
+    -------
+    str
+        The most likely gender, taken from the softmax returned by the model.
+    """
+    # Create the request object.
+
+    data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
+    headers = {"content-type": "application/json"}
+    json_response = requests.post(f"http://{MODEL_SERVER_URL}:8080/v1/models/age_model:predict", data=data, headers=headers)
+
+    # Get the prediction.
+    predictions = np.array(json.loads(json_response.text)["predictions"])
+    pred = np.argmax(predictions[0])
+
+    return pred
