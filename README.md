@@ -32,7 +32,3 @@ These files are for Heroku deployment:
 Test model functions that are called by the Flask server. These make calls to web API's to ensure they're still up:
 
 `python -m unittest tests/face_utils_tests.py`
-
-## TO-DO List
-
-CURRENT STATE: with firewall exception, this successfully does a videoplayback and streams dummy predictions. Major next steps are setting up HTTPS so that the video playback always works and then setting up model servers.
