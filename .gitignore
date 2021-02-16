@@ -2,5 +2,4 @@ data.json
 __pycache__
 nohup.out
 models
-deploy.sh
 .DS_Store
