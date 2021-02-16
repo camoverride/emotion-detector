@@ -1,6 +1,10 @@
 # Emotion Detector
 
-This repo creates an app that serves returns face-analysis information to a client. This repo includes a mini-XCEPTION model which was based off of [this paper](https://arxiv.org/pdf/1710.07557.pdf).
+This is an application that takes a video of your face and returns information about it: gender, age, and real-time updates about your emotional state.
+
+Video information is captured by the app and then the image is cropped to your face. Then this information is sent off to several model servers that do different analyses (gender, age, emotion) and return the results to the client.
+
+This repo includes a mini-XCEPTION model which was based off of [this paper](https://arxiv.org/pdf/1710.07557.pdf).
 
 Related repos are:
 
