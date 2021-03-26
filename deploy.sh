@@ -1,5 +1,4 @@
 # This assumes that a kube cluster has already been set up
-
 # Set environment variables
 export PROJECT_ID=face-app-275621
 export PROJECT_NAME=face-app
