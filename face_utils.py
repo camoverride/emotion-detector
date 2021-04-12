@@ -16,6 +16,7 @@ from skimage.transform import resize
 
 # MODEL_SERVER_URL = "34.83.242.28"
 MODEL_SERVER_URL = "localhost"
+MODEL_SERVER_PORT = "8080"
 
 
 def decode_image(image_string):
@@ -142,7 +143,7 @@ def get_emotions(cropped_face):
     # Create the request object.
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
-    json_response = requests.post(f"http://{MODEL_SERVER_URL}:8080/v1/models/emotion_model:predict", data=data, headers=headers)
+    json_response = requests.post(f"http://{MODEL_SERVER_URL}:{MODEL_SERVER_PORT}/v1/models/emotion_model:predict", data=data, headers=headers)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])
@@ -174,7 +175,7 @@ def get_gender(cropped_face):
 
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
-    json_response = requests.post(f"http://{MODEL_SERVER_URL}:8080/v1/models/gender_model:predict", data=data, headers=headers)
+    json_response = requests.post(f"http://{MODEL_SERVER_URL}:{MODEL_SERVER_PORT}/v1/models/gender_model:predict", data=data, headers=headers)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])
@@ -206,7 +207,7 @@ def get_age(cropped_face):
 
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
-    json_response = requests.post(f"http://{MODEL_SERVER_URL}:8080/v1/models/age_model:predict", data=data, headers=headers)
+    json_response = requests.post(f"http://{MODEL_SERVER_URL}:{MODEL_SERVER_PORT}/v1/models/age_model:predict", data=data, headers=headers)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])
