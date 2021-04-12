@@ -21,15 +21,25 @@ Dependencies:
 Several options to run this locally:
 
 - `export FLASK_APP=app.py && flask run`
+
+Or:
+
 - `gunicorn -b 127.0.0.1:8080 -k flask_sockets.worker app:app`
+
+Or pull it from Docker hub (this will automatically pull the image if it doesn't exist locally):
+
 - `docker run -e PYTHONUNBUFFERED=0 -p 5000:5000 face-app`
+
+Or build it yourself from Docker (choose the right verson #):
+
+- `docker build -t camoverride/face-app:v1.11 .`
 
 To run the model server, which this application depends on, you need to visit [this repo](https://github.com/camoverride/tf_models_serving)
 
 
 ## Deploy it
 
-Build and deploy a new version on GCP:
+Build and deploy a new version on GCP (modify this file with your own credentials):
 
 - `source deploy.sh`
 
@@ -42,7 +52,7 @@ These files are for Heroku deployment:
 
 ## Tests
 
-Test model functions that are called by the Flask server. These make calls to web API's to ensure they're still up:
+Test model functions that are called by the Flask server. These make calls to web API's to ensure they're still up. Run the model server before trying this, and make sure the version numbers are correct:
 
 `python -m unittest tests/face_utils_tests.py`
 
