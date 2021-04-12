@@ -1,7 +1,8 @@
 """
 This module contains functions that process image data (i.e. `decode_image`) as well as functions
-that make calls to external machine learning API's (i.e. `crop_face` and `get_emotions`). When additional
-functions are created that make calls to external API's, they should all be placed here.
+that make calls to external machine learning API's (i.e. `crop_face` and `get_emotions`).
+When additional functions are created that make calls to external API's, they should all
+be placed here.
 """
 
 import io
@@ -51,18 +52,16 @@ def get_faces(frame):
     frame: Image
         A numpy array representing all the data from a webcam page.
 
-    output_dimensions
-        A tuple that represents the desired (width, height) of the output image. Usually width = height.
-
     Returns
     -------
     numpy array
         A list of lists containing the coordinates of all the faces in the image.
     """
     face_detection_model = cv2.CascadeClassifier("models/haarcascade_frontalface_default.xml")
-    
+
     # Get the coordinates for all the faces from the model.
-    faces = face_detection_model.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=5, minSize=(48, 48), flags=cv2.CASCADE_SCALE_IMAGE)
+    faces = face_detection_model.detectMultiScale(frame,
+                scaleFactor=1.1, minNeighbors=5, minSize=(48, 48), flags=cv2.CASCADE_SCALE_IMAGE)
 
     return faces
 
@@ -82,7 +81,7 @@ def crop_face(frame: np.ndarray) -> np.ndarray:
     numpy ndarray
         A numpy array that has been cropped to the face and resized to width x height.
         The shape of this array is (1, 48, 48, 1).
-    
+
     list
         A list containing the 4 coordinates of the face: x, y, height, width.
     """
@@ -90,10 +89,11 @@ def crop_face(frame: np.ndarray) -> np.ndarray:
 
     # Crop the image to the coordinates of the first face.
     face_coords = sorted(faces, reverse=True, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]))[0]
-    (fX, fY, fW, fH) = face_coords
-    cropped_face = frame[fY:fY + fH, fX:fX + fW]
+    (x_coord, y_coord, width, height) = face_coords
+    cropped_face = frame[y_coord:y_coord + height, x_coord:x_coord + width]
 
-    # Convert to grayscale. https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
+    # Convert to grayscale.
+    # https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
     cropped_face = np.dot(cropped_face[...,:3], [0.2989, 0.5870, 0.1140])
 
     # Regularize.
@@ -110,16 +110,16 @@ def crop_face(frame: np.ndarray) -> np.ndarray:
 
 def crop_face_large(frame):
     """
-    TODO: This function is used for specific models. It should be integrated into the `crop_face` function with added
-    arguments for crop-size.
+    TODO: This function is used for specific models. It should be integrated into the
+    `crop_face` function with added arguments for crop-size.
     """
     cropped_face = resize(frame, (224, 224))
 
     # Reshape to fit model.
     cropped_face = cropped_face.reshape(1, 224, 224, 3).astype('float32')
 
-    # this is needed because data seems to be rescaled to (0, 1) interval, whereas model expects values from 0-255
-    # TODO: check this!
+    # this is needed because data seems to be rescaled to (0, 1) interval
+    # whereas model expects values from 0-255. Double check this!
     cropped_face = cropped_face * 100
 
     return cropped_face
@@ -130,10 +130,6 @@ def get_emotions(cropped_face: np.ndarray) -> str:
     Accepts a frame from a videostream and sends it to the tensorflow server which returns a
     softmax over predicted categories. This argmax from this softmax is then returned as the
     predicted emotion.
-
-    TODO: the model possibly over-predicts neutral and happy and under-predicts dsigust and
-    scared, so some post-processing should be done on the softmax in order to return a better
-    prediction.
 
     Parameters
     ----------
@@ -181,7 +177,8 @@ def get_gender(cropped_face):
 
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
-    json_response = requests.post(f"http://{MODEL_SERVER_URL}:{MODEL_SERVER_PORT}/v1/models/gender_model:predict", data=data, headers=headers)
+    json_response = requests.post(f"http://{MODEL_SERVER_URL}:{MODEL_SERVER_PORT}/v1/models/gender_model:predict",
+                data=data, headers=headers)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])
@@ -213,7 +210,8 @@ def get_age(cropped_face):
 
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
-    json_response = requests.post(f"http://{MODEL_SERVER_URL}:{MODEL_SERVER_PORT}/v1/models/age_model:predict", data=data, headers=headers)
+    json_response = requests.post(f"http://{MODEL_SERVER_URL}:{MODEL_SERVER_PORT}/v1/models/age_model:predict",
+                Fdata=data, headers=headers)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])

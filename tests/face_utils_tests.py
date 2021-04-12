@@ -2,9 +2,8 @@
 WARNING: These functions all require that a model server is up and running.
 """
 import json
-import numpy
-import requests
 import unittest
+import requests
 import numpy as np
 from face_utils import decode_image, crop_face, get_emotions
 
@@ -15,19 +14,23 @@ EMOTION_MODEL_VERSION = "1"
 
 
 class TestModelFunctions(unittest.TestCase):
+    """
+    Tests for all the functions in `face_utils.py`
+    """
     def test_get_emotion_model_dummy_data(self):
         """
         This uses dummy data to test the model inputs and outputs. It directly calls the model using
         the `URL` and `PORT` variables defined above.
         """
-        image_data = numpy.random.rand(3, 48, 48, 1)
+        image_data = np.random.rand(3, 48, 48, 1)
         data = json.dumps({"signature_name": "serving_default",
                    "instances": image_data.tolist()})
 
         headers = {"content-type": "application/json"}
-        json_response = requests.post(f"http://{URL}:{PORT}/v{EMOTION_MODEL_VERSION}/models/emotion_model:predict", data=data, headers=headers)
+        json_response = requests.post(f"http://{URL}:{PORT}/v{EMOTION_MODEL_VERSION}/models/emotion_model:predict",
+                                      data=data, headers=headers)
 
-        predictions = numpy.array(json.loads(json_response.text)["predictions"])
+        predictions = np.array(json.loads(json_response.text)["predictions"])
 
         # Three prediction vectors should be return
         assert len(predictions) == 3
@@ -44,14 +47,14 @@ class TestModelFunctions(unittest.TestCase):
         Take an image string - which is the data returned by the client (web browser) and make sure
         that is can be properly decoded into a numpy array.
         """
-        with open ("tests/image_string.txt") as f:
-            image_string = f.read()
-        
+        with open ("tests/image_string.txt") as file:
+            image_string = file.read()
+
         webcam_frame = decode_image(image_string)
 
         # This is the shape of the frame captured by the particular webcam
         self.assertEqual(webcam_frame.shape, (480, 640, 3))
-        
+
 
     def test_crop_face(self):
         """
@@ -65,9 +68,9 @@ class TestModelFunctions(unittest.TestCase):
         self.assertEqual(cropped_face.shape, (1, 48, 48, 1))
 
         # Each pixel value should be in the inteval [0, 1]
-        cf = cropped_face[0]
-        assert all([pixel > 0 and pixel < 1 for row in cf for pixel in row])
-        
+        cropf = cropped_face[0]
+        assert all([pixel > 0 and pixel < 1 for row in cropf for pixel in row])
+
 
     def test_get_emotions(self):
         """
@@ -75,6 +78,6 @@ class TestModelFunctions(unittest.TestCase):
         correct emotion is being returned.
         """
         cropped_face = np.load("tests/cropped_face.npy")
-        
+
         # The expression on the face is neutral.
         self.assertEqual(get_emotions(cropped_face), "neutral")
