@@ -14,12 +14,11 @@ from PIL import Image
 from skimage.transform import resize
 
 
-# MODEL_SERVER_URL = "34.83.242.28"
 MODEL_SERVER_URL = "localhost"
 MODEL_SERVER_PORT = "8080"
 
 
-def decode_image(image_string):
+def decode_image(image_string: str) -> np.ndarray:
     """
     Takes an image sent as a string from the client and returns an image object.
 
@@ -32,6 +31,7 @@ def decode_image(image_string):
     -------
     numpy array
         A numpy array representing all the data from the webcam frame.
+        The shape of this image is (height, width, 3)
     """
     image_data = base64.b64decode(str(image_string.split(",")[1]))
     frame = Image.open(io.BytesIO(image_data))
@@ -67,19 +67,21 @@ def get_faces(frame):
     return faces
 
 
-def crop_face(frame):
+def crop_face(frame: np.ndarray) -> np.ndarray:
     """
     Takes a list of faces and crops the image to a face.
 
     Parameters
     ----------
-    frame: Image
+    frame: numpy ndarray
         A numpy array representing all the data from the webcam frame.
+        The shape will be (height, width, 3)
 
     Returns
     -------
-    numpy array
-        A numpy array that has been cropped to the face and resized to width x height. If
+    numpy ndarray
+        A numpy array that has been cropped to the face and resized to width x height.
+        The shape of this array is (1, 48, 48, 1).
     
     list
         A list containing the 4 coordinates of the face: x, y, height, width.
@@ -107,6 +109,10 @@ def crop_face(frame):
 
 
 def crop_face_large(frame):
+    """
+    TODO: This function is used for specific models. It should be integrated into the `crop_face` function with added
+    arguments for crop-size.
+    """
     cropped_face = resize(frame, (224, 224))
 
     # Reshape to fit model.
@@ -119,7 +125,7 @@ def crop_face_large(frame):
     return cropped_face
 
 
-def get_emotions(cropped_face):
+def get_emotions(cropped_face: np.ndarray) -> str:
     """
     Accepts a frame from a videostream and sends it to the tensorflow server which returns a
     softmax over predicted categories. This argmax from this softmax is then returned as the
@@ -131,8 +137,8 @@ def get_emotions(cropped_face):
 
     Parameters
     ----------
-    cropped_face: a numpy array.
-        A numpy array representing an image cropped to a specific face. The shape is 1x48x48x1,
+    cropped_face: numpy ndarray.
+        A numpy array representing an image cropped to a specific face. The shape is (1, 48, 48, 1),
         representing 1 face of 48x48 pixels and 1 color channel.
 
     Returns
