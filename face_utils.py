@@ -25,7 +25,7 @@ def decode_image(image_string: str) -> np.ndarray:
     Parameters
     ----------
     image_string: str
-        An string sent from the client that can be decoded into an image.
+        A string sent from the client that can be decoded into an image.
 
     Returns
     -------
@@ -40,7 +40,7 @@ def decode_image(image_string: str) -> np.ndarray:
     return frame
 
 
-def crop_face(frame: np.ndarray, width=48, height=48, scaling_factor=1) -> np.ndarray:
+def crop_face(frame: np.ndarray, width=48, height=48, scaling_factor=1, grayscale=True) -> np.ndarray:
     """
     Takes an image and crops it to an individual face. If there are multiple
     faces in the image, only one is chosen. The location of the chosen face
@@ -73,18 +73,29 @@ def crop_face(frame: np.ndarray, width=48, height=48, scaling_factor=1) -> np.nd
     (x_coord, y_coord, diff_width, diff_height) = face_coords
     cropped_face = frame[y_coord:y_coord + diff_height, x_coord:x_coord + diff_width]
 
-    # Convert to grayscale.
-    # https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
-    cropped_face = np.dot(cropped_face[...,:3], [0.2989, 0.5870, 0.1140])
+    if grayscale:
+        # Convert to grayscale.
+        # https://pillow.readthedocs.io/en/3.2.x/reference/Image.html#PIL.Image.Image.convert
+        cropped_face = np.dot(cropped_face[...,:3], [0.2989, 0.5870, 0.1140])
 
-    # Regularize.
-    cropped_face = cropped_face / 255
+        # Regularize.
+        cropped_face = cropped_face / 255
 
-    # Resize to the desired dimensions.
-    cropped_face = resize(cropped_face, (width, height))
+        # Resize to the desired dimensions.
+        cropped_face = resize(cropped_face, (width, height))
 
-    # Reshape to fit model.
-    cropped_face = cropped_face.reshape(1, width, height, 1)
+        # Reshape to fit model.
+        cropped_face = cropped_face.reshape(1, width, height, 1)
+
+    else:
+        # Regularize.
+        cropped_face = cropped_face / 255
+
+        # Resize to the desired dimensions.
+        cropped_face = resize(cropped_face, (width, height))
+
+        # Reshape to fit model.
+        cropped_face = cropped_face.reshape(1, width, height, 3)
 
     # Some models require that the data is rescaled
     cropped_face = cropped_face * scaling_factor
@@ -93,12 +104,12 @@ def crop_face(frame: np.ndarray, width=48, height=48, scaling_factor=1) -> np.nd
 
 
 def get_model_pred(cropped_face: np.ndarray, model_server_url: str,
-            model_server_port: str, model_version: str, model_name: str,
-            categories: list) -> str:
+            model_server_port: str, model_version: str, model_name: str) -> dict:
     """
     Accepts a frame from a videostream and sends it to the tensorflow server which returns a
-    softmax over predicted categories. This argmax from this softmax is then returned as the
-    predicted category.
+    softmax over predicted categories. This argmax from this softmax is then chosen as the
+    predicted category. A dict is returned where there is a prediction key and then a list
+    of all the predictions, which may have names. Decoding is model-specific.
 
     Parameters
     ----------
@@ -109,8 +120,9 @@ def get_model_pred(cropped_face: np.ndarray, model_server_url: str,
 
     Returns
     -------
-    str
-        The most likely category, taken from the softmax returned by the model.
+    dict
+        A dict object with the key "prediction" that is a list of predictions (usually just)
+        a single element. This can be iterated over to find the predicted categories.
     """
     # Create the request object.
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
@@ -119,8 +131,25 @@ def get_model_pred(cropped_face: np.ndarray, model_server_url: str,
                 data=data, headers=headers)
 
     # Get the prediction.
-    predictions = np.array(json.loads(json_response.text)["predictions"])
-    max_emotion = np.argmax(predictions[0])
-    prediction = categories[max_emotion]
+    if model_name == "emotion_model":
+        emotion_categories = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
 
-    return prediction
+        predictions = np.array(json.loads(json_response.text)["predictions"])
+        max_emotion = np.argmax(predictions[0])
+        prediction = emotion_categories[max_emotion]
+
+        return {"prediction": prediction}
+
+    elif model_name == "age_gender_model":
+        gender_categories = ["female", "male"]
+        age_categories = list(range(101))
+
+        predictions = json.loads(json_response.text)["predictions"][0]
+        max_gender = gender_categories[np.argmax(predictions["dense"])]
+        max_age = age_categories[np.argmax(predictions["dense_1"])]
+
+        return {"prediction": {
+                    "gender": max_gender,
+                    "age": max_age
+                    }
+                }

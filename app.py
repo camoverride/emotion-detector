@@ -21,6 +21,7 @@ thread_lock = Lock()
 MODEL_SERVER_URL = "localhost"
 MODEL_SERVER_PORT = "8080"
 EMOTION_MODEL_VERSION = "1"
+AGE_GENDER_MODEL_VERSION = "1"
 
 
 @app.route("/")
@@ -43,14 +44,36 @@ def emotion_route(message):
     cropped_face, _ = crop_face(image)
 
     print("GETTING EMOTION")
-    emotion_categories = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
 
     # Get the category of the face.
     emotion = get_model_pred(cropped_face, model_server_url=MODEL_SERVER_URL, model_server_port=MODEL_SERVER_PORT,
-                model_version=EMOTION_MODEL_VERSION, model_name="emotion_model", categories=emotion_categories)
+                model_version=EMOTION_MODEL_VERSION, model_name="emotion_model")["prediction"]
 
     # Send the category to the client.
     socketio.emit("emotion_model_response", {"data": emotion}, namespace="/compute_emotion_route")
+
+
+@socketio.on("analyze_age_gender_request", namespace="/compute_age_gender_route")
+def age_gender_route(message):
+    """
+    Route for getting results from the age/gender model.
+    """
+    # Decode the image.
+    image = decode_image(message["data"])
+
+    # Crop the image to a single face.
+    cropped_face, _ = crop_face(image, grayscale=False, width=64, height=64)
+
+    print("GETTING GENDER/AGE")
+
+    # Get the category of the face.
+    age_gender = get_model_pred(cropped_face, model_server_url=MODEL_SERVER_URL, model_server_port=MODEL_SERVER_PORT,
+                model_version=AGE_GENDER_MODEL_VERSION, model_name="age_gender_model")["prediction"]
+
+
+    # Send the category to the client.
+    socketio.emit("age_model_response", {"data": age_gender["age"]}, namespace="/compute_age_gender_route")
+    socketio.emit("gender_model_response", {"data": age_gender["gender"]}, namespace="/compute_age_gender_route")
 
 
 @socketio.on("compute_bb_event", namespace="/compute_bb")

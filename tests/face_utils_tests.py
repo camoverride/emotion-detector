@@ -12,6 +12,7 @@ from face_utils import decode_image, crop_face, get_model_pred
 MODEL_SERVER_URL = "localhost"
 MODEL_SERVER_PORT = "8080"
 EMOTION_MODEL_VERSION = "1"
+AGE_GENDER_MODEL_VERSION = "1"
 
 
 class TestModelFunctions(unittest.TestCase):
@@ -73,16 +74,35 @@ class TestModelFunctions(unittest.TestCase):
         assert all([pixel > 0 and pixel < 1 for row in cropf for pixel in row])
 
 
-    def test_get_model_pred(self):
+    def test_get_model_pred_emotion(self):
         """
         Take a cropped face and run the `get_model_pred` function to confirm that the
         correct emotion is being returned.
         """
-        EMOTION_CATEGORIES = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
-
-        cropped_face = np.load("tests/cropped_face.npy")
+        # Face must be cropped to 48 by 48 pixels.
+        cropped_face = np.load("tests/cropped_face_48_48.npy")
 
         # The expression on the face is neutral.
-        self.assertEqual(get_model_pred(cropped_face, model_server_url=MODEL_SERVER_URL,
+        model_pred = get_model_pred(cropped_face, model_server_url=MODEL_SERVER_URL,
                     model_server_port=MODEL_SERVER_PORT, model_version=EMOTION_MODEL_VERSION,
-                    model_name="emotion_model", categories=EMOTION_CATEGORIES), "neutral")
+                    model_name="emotion_model")
+
+        self.assertEqual(model_pred["prediction"], "neutral")
+
+
+    def test_get_model_pred_gender(self):
+        """
+        Take a cropped face and run the `get_model_pred` function to confirm that the
+        correct gender is being returned.
+        """
+        # Face must be cropped to 64 by 64 pixels.
+        cropped_face = np.load("tests/cropped_face_64_64.npy")
+
+        # The gender of the face is male.
+        model_pred = get_model_pred(cropped_face, model_server_url=MODEL_SERVER_URL,
+                    model_server_port=MODEL_SERVER_PORT, model_version=AGE_GENDER_MODEL_VERSION,
+                    model_name="age_gender_model")
+
+        self.assertEqual(model_pred["prediction"]["gender"], "male")
+        self.assertEqual(model_pred["prediction"]["age"], 31)
+

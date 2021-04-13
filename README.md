@@ -28,7 +28,7 @@ Or:
 
 Or pull it from Docker hub (this will automatically pull the image if it doesn't exist locally):
 
-- `docker run -e PYTHONUNBUFFERED=0 -p 5000:5000 face-app`
+- `docker run -e PYTHONUNBUFFERED=0 -p 5000:5000 camoverride/face-app:v1.11`
 
 Or build it yourself from Docker (choose the right verson #):
 
