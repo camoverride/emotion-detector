@@ -8,7 +8,7 @@ import numpy as np
 from face_utils import decode_image, crop_face, get_model_pred
 
 
-# Configuration for server and model information.
+# Configuration for model server.
 MODEL_SERVER_URL = "localhost"
 MODEL_SERVER_PORT = "8080"
 EMOTION_MODEL_VERSION = "1"

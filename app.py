@@ -1,14 +1,23 @@
+"""
+This module serves the application (`index`) and has a route that generates
+a bounding box that's displayed to the user (`bb_route`). Other routes are
+responsible for calling models on a remote server and returning the results
+to the client.
+"""
+
 from threading import Lock
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
-from face_utils import decode_image, crop_face, crop_face_large, get_model_pred, get_gender
+from face_utils import decode_image, crop_face, get_model_pred
 
 
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode=None)
 thread_lock = Lock()
+
+# Congifuration for model server.
 MODEL_SERVER_URL = "localhost"
 MODEL_SERVER_PORT = "8080"
 EMOTION_MODEL_VERSION = "1"
@@ -44,46 +53,6 @@ def emotion_route(message):
     socketio.emit("emotion_model_response", {"data": emotion}, namespace="/compute_emotion_route")
 
 
-@socketio.on("analyze_gender_request", namespace="/compute_gender_route")
-def gender_route(message):
-    """
-    Route for getting results from the gender model.
-    """
-    # Decode the image.
-    image = decode_image(message["data"])
-
-    # Crop the image to a single face.
-    cropped_face = crop_face_large(image, width=224, height=224, scaling_factor=100)
-
-    print("GETTING GENDER")
-
-    # Get the category of the face.
-    gender = get_model_pred(cropped_face)
-
-    # Send the category to the client.
-    socketio.emit("gender_model_response", {"data": gender}, namespace="/compute_gender_route")
-
-
-@socketio.on("analyze_age_request", namespace="/compute_age_route")
-def age_route(message):
-    """
-    Route for getting results from the age model.
-    """
-    # Decode the image.
-    image = decode_image(message["data"])
-
-    # Crop the image to a single face.
-    cropped_face = crop_face_large(image, width=224, height=224, scaling_factor=100)
-
-    print("GETTING AGE")
-
-    # Get the category of the face.
-    age = get_model_pred(cropped_face)
-
-    # Send the category to the client.
-    socketio.emit("age_model_response", {"data": age}, namespace="/compute_age_route")
-
-
 @socketio.on("compute_bb_event", namespace="/compute_bb")
 def bb_route(message):
     """
@@ -99,7 +68,7 @@ def bb_route(message):
 
         data = {"bb_x": str(coords[0]), "bb_y": str(coords[1]), "bb_width": str(coords[2]), "bb_height": str(coords[3])}
 
-    except:
+    except IndexError:
         data = {"bb_x": str(0), "bb_y": str(0), "bb_width": str(0), "bb_height": str(0)}
 
     # Send the category to the client.

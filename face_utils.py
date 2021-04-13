@@ -98,23 +98,25 @@ def get_model_pred(cropped_face: np.ndarray, model_server_url: str,
     """
     Accepts a frame from a videostream and sends it to the tensorflow server which returns a
     softmax over predicted categories. This argmax from this softmax is then returned as the
-    predicted emotion.
+    predicted category.
 
     Parameters
     ----------
     cropped_face: numpy ndarray.
-        A numpy array representing an image cropped to a specific face. The shape is (1, 48, 48, 1),
-        representing 1 face of 48x48 pixels and 1 color channel.
+        A numpy array representing an image cropped to a specific face. The shape is
+        (1, width, height, 1), representing 1 face of width/height pixels and 1 color
+        channel. Different models will require different width/heights.
 
     Returns
     -------
     str
-        The most likely emotion, taken from the softmax returned by the model.
+        The most likely category, taken from the softmax returned by the model.
     """
     # Create the request object.
     data = json.dumps({"signature_name": "serving_default", "instances": cropped_face.tolist()})
     headers = {"content-type": "application/json"}
-    json_response = requests.post(f"http://{model_server_url}:{model_server_port}/v{model_version}/models/{model_name}:predict", data=data, headers=headers)
+    json_response = requests.post(f"http://{model_server_url}:{model_server_port}/v{model_version}/models/{model_name}:predict",
+                data=data, headers=headers)
 
     # Get the prediction.
     predictions = np.array(json.loads(json_response.text)["predictions"])
