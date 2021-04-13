@@ -5,11 +5,12 @@ import json
 import unittest
 import requests
 import numpy as np
-from face_utils import decode_image, crop_face, get_emotions
+from face_utils import decode_image, crop_face, get_model_pred
 
 
-URL = "localhost"
-PORT = "8080"
+# Configuration for server and model information.
+MODEL_SERVER_URL = "localhost"
+MODEL_SERVER_PORT = "8080"
 EMOTION_MODEL_VERSION = "1"
 
 
@@ -17,7 +18,7 @@ class TestModelFunctions(unittest.TestCase):
     """
     Tests for all the functions in `face_utils.py`
     """
-    def test_get_emotion_model_dummy_data(self):
+    def test_get_model_pred_dummy_data(self):
         """
         This uses dummy data to test the model inputs and outputs. It directly calls the model using
         the `URL` and `PORT` variables defined above.
@@ -27,7 +28,7 @@ class TestModelFunctions(unittest.TestCase):
                    "instances": image_data.tolist()})
 
         headers = {"content-type": "application/json"}
-        json_response = requests.post(f"http://{URL}:{PORT}/v{EMOTION_MODEL_VERSION}/models/emotion_model:predict",
+        json_response = requests.post(f"http://{MODEL_SERVER_URL}:{MODEL_SERVER_PORT}/v{EMOTION_MODEL_VERSION}/models/emotion_model:predict",
                                       data=data, headers=headers)
 
         predictions = np.array(json.loads(json_response.text)["predictions"])
@@ -72,12 +73,16 @@ class TestModelFunctions(unittest.TestCase):
         assert all([pixel > 0 and pixel < 1 for row in cropf for pixel in row])
 
 
-    def test_get_emotions(self):
+    def test_get_model_pred(self):
         """
-        Take a cropped face and run the `get_emotions` function to confirm that the
+        Take a cropped face and run the `get_model_pred` function to confirm that the
         correct emotion is being returned.
         """
+        EMOTION_CATEGORIES = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
+
         cropped_face = np.load("tests/cropped_face.npy")
 
         # The expression on the face is neutral.
-        self.assertEqual(get_emotions(cropped_face), "neutral")
+        self.assertEqual(get_model_pred(cropped_face, model_server_url=MODEL_SERVER_URL,
+                    model_server_port=MODEL_SERVER_PORT, model_version=EMOTION_MODEL_VERSION,
+                    model_name="emotion_model", categories=EMOTION_CATEGORIES), "neutral")

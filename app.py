@@ -3,12 +3,15 @@ from threading import Lock
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
-from face_utils import decode_image, crop_face, crop_face_large, get_emotions, get_gender
+from face_utils import decode_image, crop_face, crop_face_large, get_model_pred, get_gender
 
 
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode=None)
-thread_lock = Lock() # TODO: not sure if this is needed.
+thread_lock = Lock()
+MODEL_SERVER_URL = "localhost"
+MODEL_SERVER_PORT = "8080"
+EMOTION_MODEL_VERSION = "1"
 
 
 @app.route("/")
@@ -31,9 +34,11 @@ def emotion_route(message):
     cropped_face, _ = crop_face(image)
 
     print("GETTING EMOTION")
+    emotion_categories = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
 
     # Get the category of the face.
-    emotion = get_emotions(cropped_face)
+    emotion = get_model_pred(cropped_face, model_server_url=MODEL_SERVER_URL, model_server_port=MODEL_SERVER_PORT,
+                model_version=EMOTION_MODEL_VERSION, model_name="emotion_model", categories=emotion_categories)
 
     # Send the category to the client.
     socketio.emit("emotion_model_response", {"data": emotion}, namespace="/compute_emotion_route")
@@ -48,12 +53,12 @@ def gender_route(message):
     image = decode_image(message["data"])
 
     # Crop the image to a single face.
-    cropped_face = crop_face_large(image)
+    cropped_face = crop_face_large(image, width=224, height=224, scaling_factor=100)
 
     print("GETTING GENDER")
 
     # Get the category of the face.
-    gender = get_gender(cropped_face)
+    gender = get_model_pred(cropped_face)
 
     # Send the category to the client.
     socketio.emit("gender_model_response", {"data": gender}, namespace="/compute_gender_route")
@@ -68,12 +73,12 @@ def age_route(message):
     image = decode_image(message["data"])
 
     # Crop the image to a single face.
-    cropped_face = crop_face_large(image)
+    cropped_face = crop_face_large(image, width=224, height=224, scaling_factor=100)
 
     print("GETTING AGE")
 
     # Get the category of the face.
-    age = get_age(cropped_face)
+    age = get_model_pred(cropped_face)
 
     # Send the category to the client.
     socketio.emit("age_model_response", {"data": age}, namespace="/compute_age_route")
