@@ -11,6 +11,7 @@ Related repos are:
 - [serving](https://github.com/camoverride/tf_models_serving)
 - [model development](https://github.com/camoverride/notebooks/blob/master/notebooks/Emotion_Detection_Transfer_Learning_v2.ipynb)
 
+![picture of the application](https://github.com/camoverride/emotion-detector/blob/master/app_example.png?raw=true)
 
 ## Run it
 
