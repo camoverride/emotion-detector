@@ -17,6 +17,7 @@ from skimage.transform import resize
 
 MODEL_SERVER_URL = "localhost"
 MODEL_SERVER_PORT = "8080"
+FACE_DETECTION_MODEL = cv2.CascadeClassifier("models/haarcascade_frontalface_default.xml")
 
 
 def decode_image(image_string: str) -> np.ndarray:
@@ -30,7 +31,7 @@ def decode_image(image_string: str) -> np.ndarray:
 
     Returns
     -------
-    numpy array
+    numpy ndarray
         A numpy array representing all the data from the webcam frame.
         The shape of this image is (height, width, 3)
     """
@@ -41,34 +42,9 @@ def decode_image(image_string: str) -> np.ndarray:
     return frame
 
 
-def get_faces(frame):
-    """
-    This function uses the haarcascade model to identify faces in an image.
-
-    TODO: implement this in tensorflow and add it to the model server.
-
-    Parameters
-    ----------
-    frame: Image
-        A numpy array representing all the data from a webcam page.
-
-    Returns
-    -------
-    numpy array
-        A list of lists containing the coordinates of all the faces in the image.
-    """
-    face_detection_model = cv2.CascadeClassifier("models/haarcascade_frontalface_default.xml")
-
-    # Get the coordinates for all the faces from the model.
-    faces = face_detection_model.detectMultiScale(frame,
-                scaleFactor=1.1, minNeighbors=5, minSize=(48, 48), flags=cv2.CASCADE_SCALE_IMAGE)
-
-    return faces
-
-
 def crop_face(frame: np.ndarray) -> np.ndarray:
     """
-    Takes a list of faces and crops the image to a face.
+    Takes an image and crops it to an individual face.
 
     Parameters
     ----------
@@ -85,7 +61,9 @@ def crop_face(frame: np.ndarray) -> np.ndarray:
     list
         A list containing the 4 coordinates of the face: x, y, height, width.
     """
-    faces = get_faces(frame)
+    # Get the coordinates for all the faces from the model.
+    faces = FACE_DETECTION_MODEL.detectMultiScale(frame,
+                scaleFactor=1.1, minNeighbors=5, minSize=(48, 48), flags=cv2.CASCADE_SCALE_IMAGE)
 
     # Crop the image to the coordinates of the first face.
     face_coords = sorted(faces, reverse=True, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]))[0]
