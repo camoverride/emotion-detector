@@ -141,7 +141,7 @@ def get_model_pred(cropped_face: np.ndarray, model_server_url: str,
         return {"prediction": prediction}
 
     elif model_name == "age_gender_model":
-        gender_categories = ["female", "male"]
+        gender_categories = ["male", "female"]
         age_categories = list(range(101))
 
         predictions = json.loads(json_response.text)["predictions"][0]
