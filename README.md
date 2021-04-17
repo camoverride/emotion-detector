@@ -6,10 +6,7 @@ Video information is captured by the app and then the image is cropped to your f
 
 This repo includes a mini-XCEPTION model which was based off of [this paper](https://arxiv.org/pdf/1710.07557.pdf).
 
-Related repos are:
-
-- [serving](https://github.com/camoverride/tf_models_serving)
-- [model development](https://github.com/camoverride/notebooks/blob/master/notebooks/Emotion_Detection_Transfer_Learning_v2.ipynb)
+For more information on the model check out [this notebook](https://github.com/camoverride/notebooks/blob/master/notebooks/Emotion_Detection_Transfer_Learning_v2.ipynb)
 
 ![picture of the application](https://github.com/camoverride/emotion-detector/blob/master/app_example.png?raw=true)
 
@@ -35,7 +32,12 @@ Or build it yourself from Docker (choose the right verson #):
 
 - `docker build -t camoverride/face-app:v1.11 .`
 
-To run the model server, which this application depends on, you need to visit [this repo](https://github.com/camoverride/tf_models_serving)
+Then start the model server:
+
+- `docker pull camoverride/face-models:v0.3`
+- `docker run -t --rm -p 8080:8080 camoverride/face-models:v0.3`
+
+If you want to build the model server, visit the `serving` directory and check out the README.
 
 
 ## Deploy it
@@ -67,3 +69,8 @@ I then trained an emotion identification model by executing the code in [this no
 `templates/index.html` imports the `socket.io.js` library for the client. It also imports three js files from `static/assets` which handle drawing the bounding-box on the image, streaming the video back to the client, and sending video data (frames sampled every few seconds) to the server for analysis.
 
 `app.py` serves the front end HTML and also handles all the requests that get sent to the modeling servers.
+
+
+## Run it online
+
+If you want to run this online, you should have the front-end and model (both docker images) deployed on different servers. The requirements for the model server are in `serving/serving-requirements.txt`.
