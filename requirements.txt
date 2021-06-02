@@ -33,7 +33,7 @@ scipy==1.6.2
 six==1.15.0
 tifffile==2021.3.17
 tornado==6.1
-urllib3==1.26.4
+urllib3==1.26.5
 Werkzeug==1.0.1
 zope.event==4.5.0
 zope.interface==5.3.0
